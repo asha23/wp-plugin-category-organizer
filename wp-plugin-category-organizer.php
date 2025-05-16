@@ -1,12 +1,17 @@
 <?php
 /**
- * Plugin Name: Plugin Category Organizer
- * Description: Organize plugins by category using flat JSON files stored in /resources/plugin-data. Read-only in non-development environments.
- * Version: 1.0.0
- * Author: Ash
+ * Plugin Name:        	BrightLocal - Plugin Category Organizer
+ * Description:         Plugin Category Organizer - Gives the ability to organize plugins by category
+ * Author:              Ash Whiting for BrightLocal
+ * Author URI:          https://brightlocal.com
+ * Text Domain:         bl-plugin-category-organizer
+ * Version:             0.0.1
+ * License:             GPL v2 or later
+ * License URI:         https://www.gnu.org/licenses/gpl-2.0.html
+ *
  */
 
-if (!defined('ABSPATH')) {
+ if (!defined('ABSPATH')) {
     exit;
 }
 
