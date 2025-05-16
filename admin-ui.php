@@ -52,7 +52,7 @@ function pco_render_admin_page() {
                 <button name='delete_category' value='" . esc_attr($slug) . "' class='button-link-delete' onclick='return confirm(\"Delete this category?\")'>Delete</button></li>";
         }
         echo '</ul><input type="text" name="new_category" placeholder="Add new category" />
-            <input type=\"submit\" class=\"button button-secondary\" value=\"Add\" /></form><hr>';
+            <input type="submit" class="button button-secondary" value="Add" /></form><hr>';
 
         echo '<form method="POST">';
         wp_nonce_field('pco_plugin_category_form');
