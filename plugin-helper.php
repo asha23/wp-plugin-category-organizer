@@ -1,7 +1,15 @@
 <?php
 
 function pco_is_dev(): bool {
-    return wp_get_environment_type() === 'development';
+    if (defined('WP_ENVIRONMENT_TYPE')) {
+        return WP_ENVIRONMENT_TYPE === 'development';
+    }
+
+    if (defined('WP_ENV')) {
+        return WP_ENV === 'development';
+    }
+
+    return false;
 }
 
 function pco_data_dir(): string {
