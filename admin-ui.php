@@ -56,40 +56,62 @@ function pco_render_admin_page() {
 
         echo '<form method="POST">';
         wp_nonce_field('pco_plugin_category_form');
-        echo '<h2>Assign Plugins</h2><table class="form-table"><tbody>';
+        echo '<h2>Assign Plugins</h2>';
+
+        echo '<p><input type="submit" class="button button-primary" value="Save Assignments" /></p>';
+
+        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<thead><tr><th>Plugin</th><th>Category</th></tr></thead><tbody>';
+
+        ksort($categories);
+        $category_keys = array_keys($categories);
+        $plugins_by_category = [];
 
         foreach ($plugins as $pluginPath => $pluginData) {
-            $current = $assigned[$pluginPath] ?? '';
-            echo '<tr><th scope="row">' . esc_html($pluginData['Name']) . '</th><td><select name="plugin_assignments[' . esc_attr($pluginPath) . ']">';
-            echo '<option value="">Unassigned</option>';
-            foreach ($categories as $slug => $label) {
-                $selected = selected($slug, $current, false);
-                echo "<option value='" . esc_attr($slug) . "' $selected>$label</option>";
+            $cat = $assigned[$pluginPath] ?? '';
+            $plugins_by_category[$cat][] = [
+                'path' => $pluginPath,
+                'name' => $pluginData['Name'],
+                'version' => $pluginData['Version'],
+            ];
+        }
+
+        foreach ($categories as $slug => $label) {
+            if (!isset($plugins_by_category[$slug])) continue;
+            foreach ($plugins_by_category[$slug] as $plugin) {
+                echo '<tr>';
+                echo '<td>' . esc_html($plugin['name']) . ' <span style="color:#999;">(' . esc_html($plugin['version']) . ')</span></td>';
+                echo '<td><select name="plugin_assignments[' . esc_attr($plugin['path']) . ']">';
+                echo '<option value="">Unassigned</option>';
+                foreach ($categories as $cat_slug => $cat_label) {
+                    $selected = selected($slug, $cat_slug, false);
+                    echo "<option value='" . esc_attr($cat_slug) . "' $selected>$cat_label</option>";
+                }
+                echo '</select></td>';
+                echo '</tr>';
             }
-            echo '</select></td></tr>';
         }
 
-        echo '</tbody></table><p><input type="submit" class="button button-primary" value="Save Assignments" /></p></form>';
+        // Add unassigned ones
+        foreach ($plugins as $pluginPath => $pluginData) {
+            if (!isset($assigned[$pluginPath]) || !isset($categories[$assigned[$pluginPath]])) {
+                echo '<tr>';
+                echo '<td>' . esc_html($pluginData['Name']) . ' <span style="color:#999;">(' . esc_html($pluginData['Version']) . ')</span></td>';
+                echo '<td><select name="plugin_assignments[' . esc_attr($pluginPath) . ']">';
+                echo '<option value="" selected>Unassigned</option>';
+                foreach ($categories as $slug => $label) {
+                    echo "<option value='" . esc_attr($slug) . "'>$label</option>";
+                }
+                echo '</select></td>';
+                echo '</tr>';
+            }
+        }
+
+        echo '</tbody></table>';
+        echo '<p><input type="submit" class="button button-primary" value="Save Assignments" /></p>';
+        echo '</form>';
     } else {
-        echo '<p><em>This environment is read-only. Categories and assignments are managed in development only.</em></p>';
-    }
-
-    echo '<hr><h2>Grouped Plugin View</h2>';
-
-    $grouped = [];
-    foreach ($plugins as $pluginPath => $pluginData) {
-        $category = $assigned[$pluginPath] ?? 'Uncategorized';
-        $grouped[$category][] = $pluginData;
-    }
-
-    ksort($grouped);
-    foreach ($grouped as $category => $items) {
-        $label = $categories[$category] ?? $category;
-        echo '<h3>' . esc_html($label) . '</h3><ul>';
-        foreach ($items as $plugin) {
-            echo '<li>' . esc_html($plugin['Name']) . ' <span style="color:#999;">(' . esc_html($plugin['Version']) . ')</span></li>';
-        }
-        echo '</ul>';
+        echo '<p><em>Categories and assignments are managed in development only.</em></p>';
     }
 
     echo '</div>';
