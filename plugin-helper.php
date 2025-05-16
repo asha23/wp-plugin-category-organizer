@@ -13,7 +13,7 @@ function pco_is_dev(): bool {
 }
 
 function pco_data_dir(): string {
-    return dirname(__DIR__, 2) . '/resources/plugin-data';
+    return dirname(__DIR__, 3) . '/resources/plugin-data';
 }
 
 function pco_categories_file(): string {
@@ -50,19 +50,23 @@ function pco_initialize_flatfiles(): void {
     }
 
     $dir = pco_data_dir();
-    if (!file_exists($dir)) {
-        mkdir($dir, 0775, true);
-    }
-
     $catFile = pco_categories_file();
     $mapFile = pco_plugin_map_file();
 
-    if (!file_exists($catFile)) {
-        file_put_contents($catFile, json_encode([
-            'unnasigned' => 'Unnasigned'
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    if (!file_exists($dir)) {
+        if (!mkdir($dir, 0775, true) && !is_dir($dir)) {
+            error_log("[Plugin Category Organizer] Failed to create data dir: $dir");
+            return;
+        }
     }
 
+    // Create categories.json if it doesn't exist
+    if (!file_exists($catFile)) {
+        $defaultCats = ['unnasigned' => 'Unnasigned'];
+        file_put_contents($catFile, json_encode($defaultCats, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    // Create plugin map if it doesn't exist
     if (!file_exists($mapFile)) {
         if (!function_exists('get_plugins')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -78,3 +82,4 @@ function pco_initialize_flatfiles(): void {
         file_put_contents($mapFile, json_encode($map, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }
+
