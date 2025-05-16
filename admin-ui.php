@@ -40,7 +40,7 @@ function pco_render_admin_page() {
     }
 
     echo '<div class="wrap"><h1>Plugins by Category</h1>';
-    echo '<p>This tool reads/writes to <code>/resources/plugin-data</code>.</p>';
+    echo '<p>This tool reads/writes to <code>/public/plugin-data</code>.</p>';
 
     if ($is_dev) {
         echo '<form method="POST">';
