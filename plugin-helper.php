@@ -13,7 +13,7 @@ function pco_is_dev(): bool {
 }
 
 function pco_data_dir(): string {
-    return dirname(__DIR__, 3) . '/resources/plugin-data';
+    return dirname(__DIR__, 3) . '/plugin-data';
 }
 
 function pco_categories_file(): string {
